@@ -23,11 +23,13 @@ module.exports = botBuilder(request => {
             .addBubble(`NASA's Astronomy Picture of the Day`, 'Satellite icon by parkjisun from the Noun Project')
               .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/apod.png')
               .addButton('Show', 'SHOW_APOD')
+              .addButton('What is APOD?', 'ABOUT_APOD')
               .addButton('Website', 'http://apod.nasa.gov/apod/')
             .addBubble('Help & info', 'Monster icon by Paulo Sá Ferreira from the Noun Project')
               .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/about.png')
               .addButton('About the bot', 'ABOUT')
               .addButton('Credits', 'CREDITS')
+              .addButton('Report an issue', 'https://github.com/stojanovic/space-explorer-bot/issues')
             .get()
         ]
       })
@@ -41,8 +43,28 @@ module.exports = botBuilder(request => {
     })
       .then(response => {
         const APOD = JSON.parse(response.body)
-        const img = new fbTemplate.image(APOD.url).get()
         console.log(response.body)
-        return img
+        return [
+          `NASA's Astronomy Picture of the Day for ${APOD.date}`,
+          `"${APOD.title}", © ${APOD.copyright}`,
+          new fbTemplate.image(APOD.url).get(),
+          APOD.explanation,
+          new fbTemplate.button('Additional actions:')
+            .addButton('Download HD', APOD.hdurl)
+            .addButton('Visit website', 'http://apod.nasa.gov/apod/')
+            .get()
+        ]
       })
+
+  if (request.text === 'ABOUT_APOD')
+    return [
+      `The Astronomy Picture of the Day is one of the most popular websites at NASA. In fact, this website is one of the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.`,
+      `Each day a different image or photograph of our fascinating universe is featured, along with a brief explanation written by a professional astronomer.`
+    ]
+
+  if (request.text === 'ABOUT')
+    return `TODO: Add short about text`
+
+  if (request.text === 'CREDITS')
+    return `TODO: Add short credits text (icons, claudia, etc.)`
 })
