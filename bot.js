@@ -61,6 +61,27 @@ module.exports = botBuilder(request => {
         ]
       })
 
+  if (request.text === 'CURIOSITY_IMAGES')
+    return rp({
+      method: 'GET',
+      hostname: 'api.nasa.gov',
+      path: `/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&api_key=${request.env.nasaApiKey}`,
+      port: 443
+    })
+      .then(response => {
+        const Curiosity = JSON.parse(response.body)
+        let photos = Curiosity.photos.slice(0, 10)
+        const answer = new fbTemplate.generic()
+
+        photos.forEach(photo =>
+          answer.addBubble(photo.rover.name, `At ${photo.earth_date} using ${photo.camera.full_name}`)
+            .addImage(photo.img_src)
+            .addButton('Download', photo.img_src)
+        )
+
+        return answer.get()
+      })
+
   if (request.text === 'ABOUT_APOD')
     return [
       `The Astronomy Picture of the Day is one of the most popular websites at NASA. In fact, this website is one of the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.`,
