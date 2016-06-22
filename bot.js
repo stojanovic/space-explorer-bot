@@ -21,9 +21,11 @@ module.exports = botBuilder(request => {
           'What can I do for you today?',
           new fbTemplate.generic()
             .addBubble(`NASA's Astronomy Picture of the Day`, 'Satellite icon by parkjisun from the Noun Project')
+              .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/apod.png')
               .addButton('Show', 'SHOW_APOD')
               .addButton('Website', 'http://apod.nasa.gov/apod/')
-            .addBubble('Help & info')
+            .addBubble('Help & info', 'Monster icon by Paulo Sá Ferreira from the Noun Project')
+              .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/about.png')
               .addButton('About the bot', 'ABOUT')
               .addButton('Credits', 'CREDITS')
             .get()
