@@ -1,0 +1,19 @@
+{
+  "name": "space-explorer-bot",
+  "version": "1.0.0",
+  "description": "Chat bot that explores the space",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chat",
+    "bot"
+  ],
+  "author": "Slobodan Stojanovic <slobodan@cloudhorizon.com> (http://slobodan.me/)",
+  "license": "MIT",
+  "dependencies": {
+    "claudia-bot-builder": "git+https://github.com/claudiajs/claudia-bot-builder.git",
+    "minimal-request-promise": "^1.1.0"
+  }
+}
