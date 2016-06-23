@@ -8,8 +8,6 @@ function getRoverPhotos(rover, sol, nasaApiKey) {
   if (!sol)
     sol = (parseInt(Math.random() * 9) + 1) * 100
 
-  console.log(`https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/photos?sol=${sol}&api_key=${nasaApiKey}`)
-
   return rp({
     method: 'GET',
     hostname: 'api.nasa.gov',
@@ -29,7 +27,7 @@ function getRoverPhotos(rover, sol, nasaApiKey) {
           .addButton('Download', photo.img_src)
       })
 
-      const answer = [
+      return [
         `${roverInfo.photos[0].rover.name} rover`,
         `Landing Date: ${roverInfo.photos[0].rover.landing_date} \nTotal photos: ${roverInfo.photos[0].rover.total_photos}`,
         roverImages.get(),
@@ -39,8 +37,6 @@ function getRoverPhotos(rover, sol, nasaApiKey) {
           .addButton('Back to start', 'MAIN_MENU')
           .get()
       ]
-
-      return answer
     })
     .catch(err => {
       console.log(err)
@@ -96,8 +92,7 @@ module.exports = botBuilder(request => {
     })
       .then(response => {
         const APOD = JSON.parse(response.body)
-        console.log(response.body)
-        const answer = [
+        return [
           `NASA's Astronomy Picture of the Day for ${APOD.date}`,
           `"${APOD.title}", © ${APOD.copyright}`,
           new fbTemplate.image(APOD.url).get(),
@@ -108,8 +103,6 @@ module.exports = botBuilder(request => {
             .addButton('Back to start', 'MAIN_MENU')
             .get()
         ]
-        console.log(answer)
-        return answer
       })
 
   if (request.text === 'MAIN_MENU')
@@ -126,7 +119,6 @@ module.exports = botBuilder(request => {
 
   if (request.text.indexOf('PHOTOS_') === 0) {
     const args = request.text.split('_')
-    console
     return getRoverPhotos(args[1], args[2], request.env.nasaApiKey)
   }
 
