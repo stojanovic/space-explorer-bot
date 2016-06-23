@@ -4,6 +4,70 @@ const rp = require('minimal-request-promise')
 const botBuilder = require('claudia-bot-builder')
 const fbTemplate = botBuilder.fbTemplate
 
+function getRoverPhotos(rover, sol, nasaApiKey) {
+  if (!sol)
+    sol = (parseInt(Math.random() * 9) + 1) * 100
+
+  console.log(`https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/photos?sol=${sol}&api_key=${nasaApiKey}`)
+
+  return rp({
+    method: 'GET',
+    hostname: 'api.nasa.gov',
+    path: `/mars-photos/api/v1/rovers/${rover}/photos?sol=${sol}&api_key=${nasaApiKey}`,
+    port: 443
+  })
+    .then(response => {
+      let rawBody = response.body
+
+      let roverInfo = JSON.parse('' + rawBody)
+      let photos = roverInfo.photos.slice(0, 10)
+      let roverImages = new fbTemplate.generic()
+
+      photos.forEach(photo => {
+        return roverImages.addBubble(photo.rover.name, 'At ' + photo.earth_date + ' (sol ' + photo.sol + '), using ' + photo.camera.full_name)
+          .addImage(photo.img_src)
+          .addButton('Download', photo.img_src)
+      })
+
+      const answer = [
+        `${roverInfo.photos[0].rover.name} rover`,
+        `Landing Date: ${roverInfo.photos[0].rover.landing_date} \nTotal photos: ${roverInfo.photos[0].rover.total_photos}`,
+        roverImages.get(),
+        new fbTemplate.button('Additional actions:')
+          .addButton('Show newest photos', `PHOTOS_${rover}_${roverInfo.photos[0].rover.max_sol}`)
+          .addButton('Visit Wikipedia', `https://en.wikipedia.org/wiki/${rover}_(rover)`)
+          .addButton('Back to start', 'MAIN_MENU')
+          .get()
+      ]
+
+      return answer
+    })
+    .catch(err => {
+      console.log(err)
+      return getRoverPhotos(rover, 1000, nasaApiKey)
+    })
+}
+
+function mainMenu() {
+  return new fbTemplate.generic()
+    .addBubble(`NASA's Astronomy Picture of the Day`, 'Satellite icon by parkjisun from the Noun Project')
+      .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/apod.png')
+      .addButton('Show', 'SHOW_APOD')
+      .addButton('What is APOD?', 'ABOUT_APOD')
+      .addButton('Website', 'http://apod.nasa.gov/apod/')
+    .addBubble(`Photos from NASA's rovers on Mars`, 'Curiosity Rover icon by Oliviu Stoian from the Noun Project')
+      .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/mars-rover.png')
+      .addButton('Curiosity', 'CURIOSITY_IMAGES')
+      .addButton('Opportunity', 'OPPORTUNITY_IMAGES')
+      .addButton('Spirit', 'SPIRIT_IMAGES')
+    .addBubble('Help & info', 'Monster icon by Paulo Sá Ferreira from the Noun Project')
+      .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/about.png')
+      .addButton('About the bot', 'ABOUT')
+      .addButton('Credits', 'CREDITS')
+      .addButton('Report an issue', 'https://github.com/stojanovic/space-explorer-bot/issues')
+    .get()
+}
+
 module.exports = botBuilder(request => {
   console.log(JSON.stringify(request))
 
@@ -19,23 +83,7 @@ module.exports = botBuilder(request => {
         return [
           `Hello ${user.first_name}, welcome to Space Explorer! Ready to start a new journey through the space?`,
           'What can I do for you today?',
-          new fbTemplate.generic()
-            .addBubble(`NASA's Astronomy Picture of the Day`, 'Satellite icon by parkjisun from the Noun Project')
-              .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/apod.png')
-              .addButton('Show', 'SHOW_APOD')
-              .addButton('What is APOD?', 'ABOUT_APOD')
-              .addButton('Website', 'http://apod.nasa.gov/apod/')
-            .addBubble(`Photos from NASA's rovers on Mars`, 'Curiosity Rover icon by Oliviu Stoian from the Noun Project')
-              .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/mars-rover.png')
-              .addButton('Curiosity', 'CURIOSITY_IMAGES')
-              .addButton('Opportunity', 'OPPORTUNITY_IMAGES')
-              .addButton('Spirit', 'SPIRIT_IMAGES')
-            .addBubble('Help & info', 'Monster icon by Paulo Sá Ferreira from the Noun Project')
-              .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/about.png')
-              .addButton('About the bot', 'ABOUT')
-              .addButton('Credits', 'CREDITS')
-              .addButton('Report an issue', 'https://github.com/stojanovic/space-explorer-bot/issues')
-            .get()
+          mainMenu()
         ]
       })
 
@@ -49,7 +97,7 @@ module.exports = botBuilder(request => {
       .then(response => {
         const APOD = JSON.parse(response.body)
         console.log(response.body)
-        return [
+        const answer = [
           `NASA's Astronomy Picture of the Day for ${APOD.date}`,
           `"${APOD.title}", © ${APOD.copyright}`,
           new fbTemplate.image(APOD.url).get(),
@@ -57,30 +105,30 @@ module.exports = botBuilder(request => {
           new fbTemplate.button('Additional actions:')
             .addButton('Download HD', APOD.hdurl)
             .addButton('Visit website', 'http://apod.nasa.gov/apod/')
+            .addButton('Back to start', 'MAIN_MENU')
             .get()
         ]
+        console.log(answer)
+        return answer
       })
+
+  if (request.text === 'MAIN_MENU')
+    return mainMenu()
 
   if (request.text === 'CURIOSITY_IMAGES')
-    return rp({
-      method: 'GET',
-      hostname: 'api.nasa.gov',
-      path: `/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&api_key=${request.env.nasaApiKey}`,
-      port: 443
-    })
-      .then(response => {
-        const Curiosity = JSON.parse(response.body)
-        let photos = Curiosity.photos.slice(0, 10)
-        const answer = new fbTemplate.generic()
+    return getRoverPhotos('curiosity', null, request.env.nasaApiKey)
 
-        photos.forEach(photo =>
-          answer.addBubble(photo.rover.name, `At ${photo.earth_date} using ${photo.camera.full_name}`)
-            .addImage(photo.img_src)
-            .addButton('Download', photo.img_src)
-        )
+  if (request.text === 'OPPORTUNITY_IMAGES')
+    return getRoverPhotos('opportunity', null, request.env.nasaApiKey)
 
-        return answer.get()
-      })
+  if (request.text === 'SPIRIT_IMAGES')
+    return getRoverPhotos('spirit', null, request.env.nasaApiKey)
+
+  if (request.text.indexOf('PHOTOS_') === 0) {
+    const args = request.text.split('_')
+    console
+    return getRoverPhotos(args[1], args[2], request.env.nasaApiKey)
+  }
 
   if (request.text === 'ABOUT_APOD')
     return [
