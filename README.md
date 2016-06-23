@@ -3,6 +3,9 @@ Space Explorer is simple Messenger chat bot that uses NASA's API to get the data
 
 It's created for fun and also as a showcase for [Claudia Bot Builder](), node.js library for creating chat bots for various platform and deploying them on AWS Lambda.
 
+## Watch the video
+
+Short video is available on [Vimeo](https://vimeo.com/172001135).
 
 ## Try it live
 
