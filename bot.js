@@ -33,7 +33,7 @@ function getRoverPhotos(rover, sol, nasaApiKey) {
         `${roverInfo.photos[0].rover.name} rover`,
         `Landing Date: ${roverInfo.photos[0].rover.landing_date} \nTotal photos: ${roverInfo.photos[0].rover.total_photos}`,
         roverImages.get(),
-        new fbTemplate.button('Additional actions:')
+        new fbTemplate.button('More actions:')
           .addButton('Show newest photos', `PHOTOS_${rover}_${roverInfo.photos[0].rover.max_sol}`)
           .addButton('Visit Wikipedia', `https://en.wikipedia.org/wiki/${rover}_(rover)`)
           .addButton('Back to start', 'MAIN_MENU')
@@ -102,7 +102,7 @@ module.exports = botBuilder(request => {
           `"${APOD.title}", © ${APOD.copyright}`,
           new fbTemplate.image(APOD.url).get(),
           APOD.explanation,
-          new fbTemplate.button('Additional actions:')
+          new fbTemplate.button('More actions:')
             .addButton('Download HD', APOD.hdurl)
             .addButton('Visit website', 'http://apod.nasa.gov/apod/')
             .addButton('Back to start', 'MAIN_MENU')
@@ -133,12 +133,34 @@ module.exports = botBuilder(request => {
   if (request.text === 'ABOUT_APOD')
     return [
       `The Astronomy Picture of the Day is one of the most popular websites at NASA. In fact, this website is one of the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.`,
-      `Each day a different image or photograph of our fascinating universe is featured, along with a brief explanation written by a professional astronomer.`
+      `Each day a different image or photograph of our fascinating universe is featured, along with a brief explanation written by a professional astronomer.`,
+      new fbTemplate.button('More actions:')
+        .addButton('Show photo', 'SHOW_APOD')
+        .addButton('Visit website', 'http://apod.nasa.gov/apod/')
+        .addButton('Back to start', 'MAIN_MENU')
+        .get()
     ]
 
   if (request.text === 'ABOUT')
-    return `TODO: Add short about text`
+    return [
+      `Space Explorer is simple Messenger chat bot that uses NASA's API to get the data and images about the space`,
+      `It's created for fun and also as a showcase for Claudia Bot Builder, node.js library for creating chat bots for various platform and deploying them on AWS Lambda`,
+      new fbTemplate.button('More actions:')
+        .addButton('Claudia Bot Builder', 'https://github.com/claudiajs/claudia-bot-builder')
+        .addButton('Source code', 'https://github.com/stojanovic/space-explorer-bot')
+        .get()
+    ]
 
   if (request.text === 'CREDITS')
-    return `TODO: Add short credits text (icons, claudia, etc.)`
+    return [
+      'Claudia Bot Builder was created by Gojko Adžić, Aleksandar Simović and Slobodan Stojanović',
+      'Icons used for the bot are from the Noun Project',
+      '- Rocket icon by misirlou, \n- Satellite icon by parkjisun, \n- Curiosity Rover icon by Oliviu Stoian, \n- Monster icon by Paulo Sá Ferreira',
+      'This bot was created by Claudia Bot Builder team',
+      new fbTemplate.button('More actions:')
+        .addButton('Claudia Bot Builder', 'https://github.com/claudiajs/claudia-bot-builder')
+        .addButton('The Noun Project', 'https://thenounproject.com')
+        .addButton('Source code', 'https://github.com/stojanovic/space-explorer-bot')
+        .get()
+    ]
 })
