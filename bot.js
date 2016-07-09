@@ -64,14 +64,14 @@ function mainMenu() {
     .get()
 }
 
-module.exports = botBuilder(request => {
+module.exports = botBuilder((request, originalApiRequest) => {
   console.log(JSON.stringify(request))
 
   if (!request.postback)
     return rp({
       method: 'GET',
       hostname: 'graph.facebook.com',
-      path: `/v2.6/${request.sender}?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=${request.env.facebookAccessToken}`,
+      path: `/v2.6/${request.sender}?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=${originalApiRequest.env.facebookAccessToken}`,
       port: 443
     })
       .then(response => {
@@ -87,7 +87,7 @@ module.exports = botBuilder(request => {
     return rp({
       method: 'GET',
       hostname: 'api.nasa.gov',
-      path: `/planetary/apod?api_key=${request.env.nasaApiKey}`,
+      path: `/planetary/apod?api_key=${originalApiRequest.env.nasaApiKey}`,
       port: 443
     })
       .then(response => {
@@ -109,17 +109,17 @@ module.exports = botBuilder(request => {
     return mainMenu()
 
   if (request.text === 'CURIOSITY_IMAGES')
-    return getRoverPhotos('curiosity', null, request.env.nasaApiKey)
+    return getRoverPhotos('curiosity', null, originalApiRequest.env.nasaApiKey)
 
   if (request.text === 'OPPORTUNITY_IMAGES')
-    return getRoverPhotos('opportunity', null, request.env.nasaApiKey)
+    return getRoverPhotos('opportunity', null, originalApiRequest.env.nasaApiKey)
 
   if (request.text === 'SPIRIT_IMAGES')
-    return getRoverPhotos('spirit', null, request.env.nasaApiKey)
+    return getRoverPhotos('spirit', null, originalApiRequest.env.nasaApiKey)
 
   if (request.text.indexOf('PHOTOS_') === 0) {
     const args = request.text.split('_')
-    return getRoverPhotos(args[1], args[2], request.env.nasaApiKey)
+    return getRoverPhotos(args[1], args[2], originalApiRequest.env.nasaApiKey)
   }
 
   if (request.text === 'ABOUT_APOD')

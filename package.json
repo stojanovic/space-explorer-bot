@@ -13,7 +13,16 @@
   "author": "Slobodan Stojanovic <slobodan@cloudhorizon.com> (http://slobodan.me/)",
   "license": "MIT",
   "dependencies": {
-    "claudia-bot-builder": "git+https://github.com/claudiajs/claudia-bot-builder.git",
+    "claudia-bot-builder": "^1.3.1",
     "minimal-request-promise": "^1.1.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stojanovic/space-explorer-bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stojanovic/space-explorer-bot/issues"
+  },
+  "homepage": "https://github.com/stojanovic/space-explorer-bot"
 }
