@@ -8,12 +8,7 @@ function getRoverPhotos(rover, sol, nasaApiKey) {
   if (!sol)
     sol = (parseInt(Math.random() * 9) + 1) * 100
 
-  return rp({
-    method: 'GET',
-    hostname: 'api.nasa.gov',
-    path: `/mars-photos/api/v1/rovers/${rover}/photos?sol=${sol}&api_key=${nasaApiKey}`,
-    port: 443
-  })
+  return rp.get(`https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/photos?sol=${sol}&api_key=${nasaApiKey}`)
     .then(response => {
       let rawBody = response.body
 
@@ -68,12 +63,7 @@ module.exports = botBuilder((request, originalApiRequest) => {
   console.log(JSON.stringify(request))
 
   if (!request.postback)
-    return rp({
-      method: 'GET',
-      hostname: 'graph.facebook.com',
-      path: `/v2.6/${request.sender}?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=${originalApiRequest.env.facebookAccessToken}`,
-      port: 443
-    })
+    return rp(`https://graph.facebook.com/v2.6/${request.sender}?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=${originalApiRequest.env.facebookAccessToken}`)
       .then(response => {
         const user = JSON.parse(response.body)
         return [
@@ -84,12 +74,7 @@ module.exports = botBuilder((request, originalApiRequest) => {
       })
 
   if (request.text === 'SHOW_APOD')
-    return rp({
-      method: 'GET',
-      hostname: 'api.nasa.gov',
-      path: `/planetary/apod?api_key=${originalApiRequest.env.nasaApiKey}`,
-      port: 443
-    })
+    return rp(`http://api.nasa.gov/planetary/apod?api_key=${originalApiRequest.env.nasaApiKey}`)
       .then(response => {
         const APOD = JSON.parse(response.body)
         return [
