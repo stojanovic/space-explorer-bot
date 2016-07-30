@@ -61,6 +61,7 @@ function mainMenu() {
 
 module.exports = botBuilder((request, originalApiRequest) => {
   console.log(JSON.stringify(request))
+  originalApiRequest.lambdaContext.callbackWaitsForEmptyEventLoop = false
 
   if (!request.postback)
     return rp(`https://graph.facebook.com/v2.6/${request.sender}?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=${originalApiRequest.env.facebookAccessToken}`)
