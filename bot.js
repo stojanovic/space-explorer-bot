@@ -47,7 +47,7 @@ function mainMenu() {
       .addButton('What is APOD?', 'ABOUT_APOD')
       .addButton('Website', 'http://apod.nasa.gov/apod/')
     .addBubble(`Photos from NASA's rovers on Mars`, 'Curiosity Rover icon by Oliviu Stoian from the Noun Project')
-      .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/mars-rover.png')
+      .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/rovers.png')
       .addButton('Curiosity', 'CURIOSITY_IMAGES')
       .addButton('Opportunity', 'OPPORTUNITY_IMAGES')
       .addButton('Spirit', 'SPIRIT_IMAGES')
