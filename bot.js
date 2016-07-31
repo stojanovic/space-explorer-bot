@@ -51,6 +51,10 @@ function mainMenu() {
       .addButton('Curiosity', 'CURIOSITY_IMAGES')
       .addButton('Opportunity', 'OPPORTUNITY_IMAGES')
       .addButton('Spirit', 'SPIRIT_IMAGES')
+    .addBubble('How Many People Are In Space Right Now?', 'Monster icon by Paulo Sá Ferreira from the Noun Project')
+      .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/astronaut.png')
+      .addButton('Show', 'PEOPLE_IN_SPACE')
+      .addButton('Website', 'http://www.howmanypeopleareinspacerightnow.com')
     .addBubble('Help & info', 'Monster icon by Paulo Sá Ferreira from the Noun Project')
       .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/about.png')
       .addButton('About the bot', 'ABOUT')
@@ -88,6 +92,18 @@ module.exports = botBuilder((request, originalApiRequest) => {
             .addButton('Visit website', 'http://apod.nasa.gov/apod/')
             .addButton('Back to start', 'MAIN_MENU')
             .get()
+        ]
+      })
+
+  if (request.text === 'PEOPLE_IN_SPACE')
+    return rp('http://api.open-notify.org/astros.json')
+      .then(response => {
+        const inSpace = JSON.parse(response.body)
+        return [
+          `There are ${inSpace.number} people in Space right now.`,
+          inSpace.people.reduce(person => {
+            return person.name + ((person.craft) ? ` is on ${person.craft}` : '') + '\n'
+          })
         ]
       })
 
