@@ -51,7 +51,7 @@ function mainMenu() {
       .addButton('Curiosity', 'CURIOSITY_IMAGES')
       .addButton('Opportunity', 'OPPORTUNITY_IMAGES')
       .addButton('Spirit', 'SPIRIT_IMAGES')
-    .addBubble('How Many People Are In Space Right Now?', 'Monster icon by Paulo Sá Ferreira from the Noun Project')
+    .addBubble('How Many People Are In Space Right Now?', 'Astronaut by Javier Cabezas from the Noun Project')
       .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/astronaut.png')
       .addButton('Show', 'PEOPLE_IN_SPACE')
       .addButton('Website', 'http://www.howmanypeopleareinspacerightnow.com')
@@ -68,7 +68,7 @@ module.exports = botBuilder((request, originalApiRequest) => {
   originalApiRequest.lambdaContext.callbackWaitsForEmptyEventLoop = false
 
   if (!request.postback)
-    return rp(`https://graph.facebook.com/v2.6/${request.sender}?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=${originalApiRequest.env.facebookAccessToken}`)
+    return rp.get(`https://graph.facebook.com/v2.6/${request.sender}?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=${originalApiRequest.env.facebookAccessToken}`)
       .then(response => {
         const user = JSON.parse(response.body)
         return [
@@ -79,7 +79,7 @@ module.exports = botBuilder((request, originalApiRequest) => {
       })
 
   if (request.text === 'SHOW_APOD')
-    return rp(`https://api.nasa.gov/planetary/apod?api_key=${originalApiRequest.env.nasaApiKey}`)
+    return rp.get(`https://api.nasa.gov/planetary/apod?api_key=${originalApiRequest.env.nasaApiKey}`)
       .then(response => {
         const APOD = JSON.parse(response.body)
         return [
@@ -96,14 +96,14 @@ module.exports = botBuilder((request, originalApiRequest) => {
       })
 
   if (request.text === 'PEOPLE_IN_SPACE')
-    return rp('http://api.open-notify.org/astros.json')
+    return rp.get('http://api.open-notify.org/astros.json')
       .then(response => {
         const inSpace = JSON.parse(response.body)
         return [
           `There are ${inSpace.number} people in Space right now.`,
-          inSpace.people.reduce(person => {
-            return person.name + ((person.craft) ? ` is on ${person.craft}` : '') + '\n'
-          })
+          inSpace.people.reduce((response, person) => {
+            return response + `- ${person.name}` + ((person.craft) ? ` is on ${person.craft}` : '') + ';\n'
+          }, '')
         ]
       })
 
