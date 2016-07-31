@@ -75,16 +75,16 @@ module.exports = botBuilder((request, originalApiRequest) => {
       })
 
   if (request.text === 'SHOW_APOD')
-    return rp(`http://api.nasa.gov/planetary/apod?api_key=${originalApiRequest.env.nasaApiKey}`)
+    return rp(`https://api.nasa.gov/planetary/apod?api_key=${originalApiRequest.env.nasaApiKey}`)
       .then(response => {
         const APOD = JSON.parse(response.body)
         return [
           `NASA's Astronomy Picture of the Day for ${APOD.date}`,
-          `"${APOD.title}", © ${APOD.copyright}`,
-          new fbTemplate.image(APOD.url).get(),
+          `"${APOD.title}"` + (APOD.copyright ? `, © ${APOD.copyright}` : ''),
+          APOD.media_type === 'image' ? new fbTemplate.image(APOD.url).get() : APOD.url,
           APOD.explanation,
           new fbTemplate.button('More actions:')
-            .addButton('Download HD', APOD.hdurl)
+            .addButton('Download HD', APOD.hdurl || APOD.url)
             .addButton('Visit website', 'http://apod.nasa.gov/apod/')
             .addButton('Back to start', 'MAIN_MENU')
             .get()
