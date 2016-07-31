@@ -51,7 +51,11 @@ function mainMenu() {
       .addButton('Curiosity', 'CURIOSITY_IMAGES')
       .addButton('Opportunity', 'OPPORTUNITY_IMAGES')
       .addButton('Spirit', 'SPIRIT_IMAGES')
-    .addBubble('How Many People Are In Space Right Now?', 'Astronaut by Javier Cabezas from the Noun Project')
+    .addBubble('International Space Station', 'Space station icon by Lucid Formation from the Noun Project')
+      .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/iss.png')
+      .addButton('Current position', 'ISS_POSITION')
+      .addButton('Website', 'https://www.nasa.gov/mission_pages/station/')
+    .addBubble('How many people are in Space right now?', 'Astronaut icon by Javier Cabezas from the Noun Project')
       .addImage('https://raw.githubusercontent.com/stojanovic/space-explorer-bot/master/assets/images/astronaut.png')
       .addButton('Show', 'PEOPLE_IN_SPACE')
       .addButton('Website', 'http://www.howmanypeopleareinspacerightnow.com')
@@ -91,6 +95,20 @@ module.exports = botBuilder((request, originalApiRequest) => {
             .addButton('Download HD', APOD.hdurl || APOD.url)
             .addButton('Visit website', 'http://apod.nasa.gov/apod/')
             .addButton('Back to start', 'MAIN_MENU')
+            .get()
+        ]
+      })
+
+  if (request.text === 'ISS_POSITION')
+    return rp.get('https://api.wheretheiss.at/v1/satellites/25544')
+      .then(response => {
+        const ISS = JSON.parse(response.body)
+        return [
+          new fbTemplate.generic()
+            .addBubble(`International Space Station`, 'Current position')
+              .addImage(`https://maps.googleapis.com/maps/api/staticmap?center=${ISS.latitude},${ISS.longitude}&zoom=3&size=640x335&markers=color:red%7C${ISS.latitude},${ISS.longitude}`)
+              .addUrl('http://iss.astroviewer.net')
+              .addButton('Show website', 'http://iss.astroviewer.net')
             .get()
         ]
       })
