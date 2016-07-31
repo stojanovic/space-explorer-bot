@@ -106,10 +106,11 @@ module.exports = botBuilder((request, originalApiRequest) => {
         return [
           new fbTemplate.generic()
             .addBubble(`International Space Station`, 'Current position')
-              .addImage(`https://maps.googleapis.com/maps/api/staticmap?center=${ISS.latitude},${ISS.longitude}&zoom=3&size=640x335&markers=color:red%7C${ISS.latitude},${ISS.longitude}`)
-              .addUrl('http://iss.astroviewer.net')
+              .addImage(`https://maps.googleapis.com/maps/api/staticmap?center=${ISS.latitude},${ISS.longitude}&zoom=2&size=640x335&markers=color:red%7C${ISS.latitude},${ISS.longitude}`)
               .addButton('Show website', 'http://iss.astroviewer.net')
-            .get()
+            .get(),
+            `International Space Station:`,
+            `- Latitude: ${ISS.latitude};\n- Longitude: ${ISS.longitude};\n- Velocity: ${ISS.velocity}kmh;\n- Altitude: ${ISS.altitude};\n- Visibility: ${ISS.visibility}`
         ]
       })
 
