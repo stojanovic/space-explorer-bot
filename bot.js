@@ -67,7 +67,7 @@ function mainMenu() {
     .get()
 }
 
-module.exports = botBuilder((request, originalApiRequest) => {
+const api = botBuilder((request, originalApiRequest) => {
   console.log(JSON.stringify(request))
   originalApiRequest.lambdaContext.callbackWaitsForEmptyEventLoop = false
 
@@ -177,3 +177,8 @@ module.exports = botBuilder((request, originalApiRequest) => {
         .get()
     ]
 })
+
+api.addPostDeployConfig('nasaApiKey', 'NASA API Key:', 'configure-app');
+api.addPostDeployConfig('dbName', 'DynamoDB Table Name:', 'configure-app');
+
+module.exports = api
