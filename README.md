@@ -34,19 +34,22 @@ Or go to [m.me/space-explorer-bot](https://m.me/space-explorer-bot).
    ```
    npm install claudia -g
    ```
-   
+
 3. Create a new bot in AWS. If you changed the name of bot.js file, change the `--api-module` argument below accordingly.
 
    ```
    claudia create --region us-east-1 --api-module bot
    ```
-   
+
 4. Configure Facebook Bot with a following command and follow the instructions:
 
    ```
-   claudia update --configure-fb-bot
+   claudia update --configure-fb-bot --configure-app
    ```
-   
+
+   - `--configure-fb-bot` will prompt you for FB page access token and FB app secret (for message validation) and it'll print out your webhook URL;  
+   - `--configure-app` will prompt you for the Nasa API key (Check https://github.com/stojanovic/space-explorer-bot/blob/master/bot.js#L181);
+
 And that's it :)
 
 Full instructions for Claudia Bot Builder are available in [Getting started with Claudia Bot Builder](https://github.com/claudiajs/claudia-bot-builder/blob/master/docs/GETTING_STARTED.md) guide.
