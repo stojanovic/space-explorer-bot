@@ -179,6 +179,5 @@ const api = botBuilder((request, originalApiRequest) => {
 })
 
 api.addPostDeployConfig('nasaApiKey', 'NASA API Key:', 'configure-app');
-api.addPostDeployConfig('dbName', 'DynamoDB Table Name:', 'configure-app');
 
 module.exports = api
