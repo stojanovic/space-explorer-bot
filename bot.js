@@ -76,7 +76,7 @@ const api = botBuilder((request, originalApiRequest) => {
       .then(response => {
         const user = JSON.parse(response.body)
         return [
-          `Hello ${user.first_name}, welcome to Space Explorer! Ready to start a new journey through the space?`,
+          `Hello ${user.first_name}. Welcome to Space Explorer! Ready to start a journey through space?`,
           'What can I do for you today?',
           mainMenu()
         ]
