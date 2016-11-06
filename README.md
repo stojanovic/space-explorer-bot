@@ -11,9 +11,9 @@ Short video is available on [Vimeo](https://vimeo.com/172001135).
 
 Scan the code:
 
-[![Messenger code](assets/images/messenger_code.png)](https://m.me/space-explorer-bot)
+[![Messenger code](assets/images/messenger_code.png)](https://m.me/space.explorer.bot)
 
-Or go to [m.me/space-explorer-bot](https://m.me/space-explorer-bot).
+Or go to [https://m.me/space.explorer.bot](https://m.me/space.explorer.bot).
 
 ## How to run and deploy it
 
