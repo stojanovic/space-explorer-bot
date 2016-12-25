@@ -3,6 +3,7 @@
 const rp = require('minimal-request-promise')
 const botBuilder = require('claudia-bot-builder')
 const fbTemplate = botBuilder.fbTemplate
+const apiAi = require('./lib/helpers/api-ai')
 
 function getRoverPhotos(rover, sol, nasaApiKey) {
   if (!sol)
@@ -72,6 +73,24 @@ const api = botBuilder((request, originalApiRequest) => {
   originalApiRequest.lambdaContext.callbackWaitsForEmptyEventLoop = false
 
   if (!request.postback)
+    return apiAi(request.text, request.sender, originalApiRequest.env.apiAiToken)
+      .then(res => {
+        console.log('api.ai', res)
+        if (res.action === 'smalltalk.greetings' || res.action === 'input.unknown' || res.params.simplified === 'can you help')
+          return rp.get(`https://graph.facebook.com/v2.6/${request.sender}?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=${originalApiRequest.env.facebookAccessToken}`)
+            .then(response => {
+              const user = JSON.parse(response.body)
+              return [
+                `Hello ${user.first_name}. Welcome to Space Explorer! Ready to start a journey through space?`,
+                'What can I do for you today?',
+                mainMenu()
+              ]
+            })
+
+        return res.reply.speech || res.reply
+      })
+
+  if (request.text === 'HELLO')
     return rp.get(`https://graph.facebook.com/v2.6/${request.sender}?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=${originalApiRequest.env.facebookAccessToken}`)
       .then(response => {
         const user = JSON.parse(response.body)
@@ -81,6 +100,9 @@ const api = botBuilder((request, originalApiRequest) => {
           mainMenu()
         ]
       })
+
+  if (request.text === 'MAIN_MENU')
+    return mainMenu()
 
   if (request.text === 'SHOW_APOD')
     return rp.get(`https://api.nasa.gov/planetary/apod?api_key=${originalApiRequest.env.nasaApiKey}`)
@@ -109,8 +131,8 @@ const api = botBuilder((request, originalApiRequest) => {
               .addImage(`https://maps.googleapis.com/maps/api/staticmap?center=${ISS.latitude},${ISS.longitude}&zoom=2&size=640x335&markers=color:red%7C${ISS.latitude},${ISS.longitude}`)
               .addButton('Show website', 'http://iss.astroviewer.net')
             .get(),
-            `International Space Station:`,
-            `- Latitude: ${ISS.latitude};\n- Longitude: ${ISS.longitude};\n- Velocity: ${ISS.velocity}kmh;\n- Altitude: ${ISS.altitude};\n- Visibility: ${ISS.visibility}`
+          `International Space Station:`,
+          `- Latitude: ${ISS.latitude};\n- Longitude: ${ISS.longitude};\n- Velocity: ${ISS.velocity}kmh;\n- Altitude: ${ISS.altitude};\n- Visibility: ${ISS.visibility}`
         ]
       })
 
@@ -176,8 +198,11 @@ const api = botBuilder((request, originalApiRequest) => {
         .addButton('Source code', 'https://github.com/stojanovic/space-explorer-bot')
         .get()
     ]
+}, {
+  platforms: ['facebook']
 })
 
-api.addPostDeployConfig('nasaApiKey', 'NASA API Key:', 'configure-app');
+api.addPostDeployConfig('nasaApiKey', 'NASA API Key:', 'configure-bot')
+api.addPostDeployConfig('apiAiToken', 'Api.ai token:', 'configure-bot')
 
 module.exports = api

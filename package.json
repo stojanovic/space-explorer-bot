@@ -13,7 +13,7 @@
   "author": "Slobodan Stojanovic <slobodan@cloudhorizon.com> (http://slobodan.me/)",
   "license": "MIT",
   "dependencies": {
-    "claudia-bot-builder": "^2.1.0",
+    "claudia-bot-builder": "git+https://github.com/claudiajs/claudia-bot-builder.git",
     "minimal-request-promise": "^1.3.0"
   },
   "devDependencies": {
