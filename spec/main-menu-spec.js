@@ -94,7 +94,7 @@ describe('Main menu', () => {
     expect(typeof mainMenu).toBe('function')
   })
 
-  it('should transform the menu to the expected json', () => {
+  it('should transform the template to the expected json', () => {
     expect(mainMenu()).toEqual(expected)
   })
 })
